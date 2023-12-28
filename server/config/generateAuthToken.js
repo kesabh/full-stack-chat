@@ -3,9 +3,8 @@ import * as jose from "jose";
 export const generateAuthToken = async (payload) => {
   try {
     const alg = "HS256";
-    const secretKey = new TextEncoder().encode(
-      "12e39f06332deb2d591f9b72c143c07c8ada2f07f47a888640cbc6b178638429"
-    );
+    const secretKey = new TextEncoder().encode(process.env.SECRET_KEY);
+    console.log(process.env.SECRET_KEY);
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg })
       .setIssuedAt()
