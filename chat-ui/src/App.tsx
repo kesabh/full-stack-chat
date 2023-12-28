@@ -7,12 +7,13 @@ import { useAxiosInterceptor } from "./utils/interceptor";
 import { Provider } from "react-redux";
 import { persistor, reduxStore } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
+import "./App.css";
 
 const App = (): JSX.Element => {
   useAxiosInterceptor();
 
   return (
-    <>  
+    <>
       <Provider store={reduxStore}>
         <PersistGate loading={null} persistor={persistor}>
           <ChakraProvider>

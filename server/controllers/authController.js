@@ -74,7 +74,9 @@ authController.post(
 
       if (!name || !email || !password) {
         console.error("all fields are required");
-        res.status(401).send({ message: "all fields are required" });
+        res
+          .status(401)
+          .send({ message: "all fields are required", success: false });
         return;
       }
 
@@ -82,7 +84,9 @@ authController.post(
       const result = await userModel.find({ email });
       if (result.length) {
         console.error("user already exists");
-        res.status(200).send({ message: "user already exists" });
+        res
+          .status(200)
+          .send({ message: "User already exists", success: false });
         return;
       }
 
@@ -101,16 +105,23 @@ authController.post(
       if (savedData) {
         res.status(200).send({
           message: "user registered successfully",
-          data: savedData,
+          data: {
+            name: savedData.name,
+            email: savedData.email,
+            profilePicture: savedData.profilePicture,
+            userId: savedData._id,
+          },
           token,
+          success: true,
         });
         return;
       }
     } catch (e) {
       console.error(e);
-      res
-        .status(401)
-        .send({ message: "exception occurred while registering user" });
+      res.status(401).send({
+        message: "exception occurred while registering user",
+        success: false,
+      });
     }
   })
 );

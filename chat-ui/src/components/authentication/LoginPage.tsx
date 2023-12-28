@@ -19,10 +19,14 @@ import LoginTabs from "./LoginTabs";
 const LoginPage = (): JSX.Element => {
   return (
     <>
-      <Grid templateColumns="1" h={"100vh"}>
-        <GridItem h="100px" bg="blue.500">
+      <Grid templateColumns="1">
+        <GridItem display={"flex"} justifyContent={"center"}>
           <Box
-            h={"100%"}
+            borderRadius={10}
+            mt={50}
+            h="100px"
+            width={592}
+            bg={"white"}
             display={"flex"}
             justifyContent={"center"}
             alignItems={"center"}
@@ -33,8 +37,7 @@ const LoginPage = (): JSX.Element => {
         <GridItem
           display="flex"
           justifyContent="center"
-          h="calc(100vh - 100px )"
-          bg="green.100"
+          // h="calc(100vh - 100px )"
         >
           <LoginTabs></LoginTabs>
         </GridItem>

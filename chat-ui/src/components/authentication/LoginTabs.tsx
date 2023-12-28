@@ -22,11 +22,11 @@ const LoginTabs = () => {
         <Tabs
           variant="soft-rounded"
           width={"100%"}
-          mt="100px"
+          mt="20px"
           borderRadius={10}
-          paddingX="30"
+          paddingX="30px"
           bg={"white"}
-          paddingY={"20px"}
+          paddingY="40px"
         >
           <TabList>
             <Tab width={"100%"}>Sign In</Tab>
