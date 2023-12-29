@@ -15,7 +15,7 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import DefaultProfileIcon from "./DefauldProfileIcon";
+import ProfileIcon from "./ProfileIcon";
 import SideDrawerForUserSearch from "./SideDrawerForUserSearch";
 
 const Header = (): JSX.Element => {
@@ -74,7 +74,7 @@ const Header = (): JSX.Element => {
                   rightIcon={<ChevronDownIcon />}
                   variant={"ghost"}
                 >
-                  <DefaultProfileIcon></DefaultProfileIcon>
+                  <ProfileIcon></ProfileIcon>
                 </MenuButton>
                 <MenuList>
                   <MenuItem>My Profile</MenuItem>

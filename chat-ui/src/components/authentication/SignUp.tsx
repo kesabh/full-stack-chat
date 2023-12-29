@@ -60,9 +60,7 @@ const SignUp = (): JSX.Element => {
         apiUrls.UPLOAD_PROFILE_PICTURE,
         payloadFormData
       );
-      if (data && data.url) {
-        setFormData({ ...formData, profilePicture: data.url });
-      }
+      setFormData({ ...formData, profilePicture: data?.url });
     } catch (e) {
       toast({
         title: "Error",
@@ -72,7 +70,6 @@ const SignUp = (): JSX.Element => {
         isClosable: true,
         position: "bottom",
       });
-      return;
       console.error("error while uploading profile picture", e);
     } finally {
       setLoading(false);
@@ -83,6 +80,7 @@ const SignUp = (): JSX.Element => {
       | React.FormEvent<HTMLFormElement>
       | React.MouseEvent<HTMLButtonElement>
   ): Promise<void> => {
+    event.preventDefault();
     const { name, email, password, confirmPassword, profilePicture } = {
       ...formData,
     };
@@ -117,7 +115,7 @@ const SignUp = (): JSX.Element => {
       });
 
       if (data.success) {
-        const token = data.data && data.data.token;
+        const token = data && data.token;
         localStorage.setItem("authToken", token);
 
         setUserDetails({
@@ -131,7 +129,7 @@ const SignUp = (): JSX.Element => {
       } else {
         toast({
           title: "Error",
-          description: "Error occurred while registering user",
+          description: "User already exists",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -237,7 +235,6 @@ const SignUp = (): JSX.Element => {
                 accept="image/*"
                 autoComplete={"off"}
                 name="profilePicture"
-                value={formData.profilePicture}
                 onChange={handleProfilePictureUpload}
               />
             </InputGroup>

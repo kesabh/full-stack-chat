@@ -9,7 +9,10 @@ export const authValidator = async (req, res, next) => {
       try {
         const authToken = req.headers.authorization.slice(7);
 
-        await verifyAuthToken(authToken);
+        const userId = await verifyAuthToken(authToken);
+        if (userId) {
+          req.userId = userId;
+        }
         next();
       } catch (e) {
         console.error("error while verifying auth token", e);

@@ -21,27 +21,30 @@ userController.get(
         });
       }
 
-      const usersFromDB = await userModel.aggregate([
-        {
-          $match: {
-            $or: [
-              { name: { $regex: searchText } },
-              { email: { $regex: searchText } },
-            ],
-          },
-        },
-        {
-          $addFields: {
-            userId: "$_id",
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            password: 0,
-          },
-        },
-      ]);
+      let usersFromDB = await userModel
+        .find({
+          $and: [
+            {
+              $or: [
+                { name: { $regex: searchText } },
+                { email: { $regex: searchText } },
+              ],
+            },
+            {
+              _id: { $ne: req.userId },
+            },
+          ],
+        })
+        .select("name email _id profilePicture");
+
+      usersFromDB = usersFromDB.map((user) => {
+        return {
+          name: user.name,
+          email: user.email,
+          userId: user._id,
+          profilePicture: user.profilePicture,
+        };
+      });
 
       res.status(200).send({ data: usersFromDB, success: true });
     } catch (e) {
