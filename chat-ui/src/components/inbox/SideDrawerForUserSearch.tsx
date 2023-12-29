@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
+  Card,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -10,11 +12,14 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Input,
+  Skeleton,
   useToast,
 } from "@chakra-ui/react";
 import { apiUrls } from "../../apiUrls";
 import axiosInstace from "../../utils/interceptor";
 import { User } from "../../store/interface/user";
+import UserCard from "./UserCard";
+import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 
 interface SideDrawerForUserSearchProps {
   isOpen: boolean;
@@ -27,6 +32,7 @@ const SideDrawerForUserSearch = (
 ): JSX.Element => {
   const { isOpen, onClose, btnRef } = props;
   const [searchText, setSearchText] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [users, setUsers] = useState<Array<User>>([]);
 
@@ -38,6 +44,7 @@ const SideDrawerForUserSearch = (
       | React.MouseEvent<HTMLButtonElement>
   ): Promise<void> => {
     event.preventDefault();
+    setLoading(true);
     if (!searchText) {
       toast({
         title: "Warning",
@@ -47,34 +54,35 @@ const SideDrawerForUserSearch = (
         isClosable: true,
         position: "top-left",
       });
-      return;
     }
     try {
       const { data } = await axiosInstace.get(apiUrls.SEARCH_USERS, {
         params: { searchText },
       });
-      if (data.data && data.data.length == 0) {
-        toast({
-          title: "Error",
-          description: "No Users found",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-          position: "top-left",
-        });
-        return;
-      } else if (data.data && data.data.length > 0) {
+      if (data.data) {
         setUsers(data.data);
+        if (data.data && data.data.length == 0) {
+          toast({
+            title: "Error",
+            description: "No Users found",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top-left",
+          });
+        }
       }
     } catch (e) {
       console.error("error occurred while searching users ");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <>
       <Drawer
-        size={"sm"}
+        size={"xs"}
         isOpen={isOpen}
         placement="left"
         onClose={onClose}
@@ -89,6 +97,7 @@ const SideDrawerForUserSearch = (
             <form onSubmit={searchUsers}>
               <Box display="flex" justifyContent="space-between">
                 <Input
+                  fontSize={"14px"}
                   mr={"10px"}
                   placeholder="Search by name or email ..."
                   value={searchText}
@@ -103,13 +112,19 @@ const SideDrawerForUserSearch = (
                 </Button>
               </Box>
             </form>
-          </DrawerBody>
 
-          <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-          </DrawerFooter>
+            <Divider mt={"15px"} color={"darkgrey"}></Divider>
+
+            {loading ? (
+              <UsersLoadingSkeleton />
+            ) : (
+              <>
+                {users.map((user: User, idx: number) => {
+                  return <UserCard user={user} key={idx}></UserCard>;
+                })}
+              </>
+            )}
+          </DrawerBody>
         </DrawerContent>
       </Drawer>
     </>

@@ -54,7 +54,7 @@ const Header = (): JSX.Element => {
           <GridItem
             width={"100%"}
             display="flex"
-            justifyContent="flex-start"
+            justifyContent="center"
             alignItems="center"
           >
             <Heading> Convo Connect </Heading>

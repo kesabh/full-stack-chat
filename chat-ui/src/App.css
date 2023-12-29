@@ -5,3 +5,8 @@ body{
     background-attachment: fixed !important;
     background-size: cover !important;
 }
+*{
+    ::-webkit-scrollbar {
+        display: none;
+      }
+}
