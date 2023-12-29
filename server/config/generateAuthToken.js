@@ -8,8 +8,8 @@ export const generateAuthToken = async (payload) => {
     const jwt = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg })
       .setIssuedAt()
-      .setIssuer("sandesh-vahak-backend")
-      .setAudience("sandesh-vahak-frontend")
+      .setIssuer("convo-connect-backend")
+      .setAudience("convo-connect-frontend")
       .setExpirationTime("30d")
       .sign(secretKey);
 

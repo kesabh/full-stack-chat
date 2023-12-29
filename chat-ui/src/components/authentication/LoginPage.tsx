@@ -15,8 +15,18 @@ import {
 } from "@chakra-ui/react";
 import * as React from "react";
 import LoginTabs from "./LoginTabs";
+import { useNavigate } from "react-router-dom";
+import SideDrawerForUserSearch from "../inbox/SideDrawerForUserSearch";
 
 const LoginPage = (): JSX.Element => {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (localStorage.getItem("authToken")) {
+      navigate("/inbox");
+    }
+  }, []);
+
   return (
     <>
       <Grid templateColumns="1">
@@ -31,7 +41,7 @@ const LoginPage = (): JSX.Element => {
             justifyContent={"center"}
             alignItems={"center"}
           >
-            <Heading as="h2"> Sandesh Vahak </Heading>
+            <Heading as="h2"> Convo Connect </Heading>
           </Box>
         </GridItem>
         <GridItem
