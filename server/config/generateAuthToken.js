@@ -10,7 +10,7 @@ export const generateAuthToken = async (payload) => {
       .setIssuedAt()
       .setIssuer("convo-connect-backend")
       .setAudience("convo-connect-frontend")
-      .setExpirationTime("30d")
+      .setExpirationTime("7d")
       .sign(secretKey);
 
     return jwt;

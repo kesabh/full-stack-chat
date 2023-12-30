@@ -1,8 +1,20 @@
-import { Avatar, Box, Card, Text, background } from "@chakra-ui/react";
+import { Avatar, Box, Card, Text } from "@chakra-ui/react";
 import * as React from "react";
 import { User } from "../../store/interface/user";
+import { chatsListProvider } from "../../store/provider/chatsListProvider";
+import { useAppSelector } from "../../store/hooks";
 
-const UserCard = ({ user }: { user: User }) => {
+interface UserCardProps {
+  user: User;
+  handleStartNewChat: (
+    event: React.MouseEvent<HTMLElement>,
+    userDetails: User
+  ) => Promise<void>;
+}
+
+const UserCard = (props: UserCardProps): JSX.Element => {
+  const { user, handleStartNewChat } = props;
+
   return (
     <Card
       boxShadow={"0px 0px 5px grey"}
@@ -11,7 +23,10 @@ const UserCard = ({ user }: { user: User }) => {
       gap="10px"
       mt="10px"
       alignItems={"center"}
-        padding={"10px"}
+      padding={"10px"}
+      onClick={(e: React.MouseEvent<HTMLElement>) => {
+        handleStartNewChat(e, user);
+      }}
       _hover={{ background: "darkcyan", cursor: "pointer", color: "white" }}
     >
       <Box>

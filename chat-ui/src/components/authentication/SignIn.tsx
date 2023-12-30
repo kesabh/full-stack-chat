@@ -61,14 +61,17 @@ const SignIn = (): JSX.Element => {
       const { data } = await axios.post(apiUrls.USER_LOGIN, formData);
       if (data.success) {
         const token = data.data && data.data.token;
-        localStorage.setItem("authToken", token);
-
-        setUserDetails({
+        const userDetails = {
           name: data.data.name,
           email: data.data.email,
           userId: data.data.userId,
           profilePicture: data.data?.profilePicture,
-        });
+        };
+
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+
+        setUserDetails(userDetails);
 
         navigate("/inbox");
       } else {

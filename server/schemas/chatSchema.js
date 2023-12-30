@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const chatSchema = new mongoose.Schema(
   {
+    chatName: { type: String },
     latestMessage: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
-    isGroupChat: { type: boolean },
+    isGroupChat: { type: Boolean },
     groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
@@ -12,4 +13,4 @@ const chatSchema = new mongoose.Schema(
   }
 );
 
-export const chatModel = new mongoose.Model("Chat", chatSchema);
+export const chatModel = new mongoose.model("Chat", chatSchema);

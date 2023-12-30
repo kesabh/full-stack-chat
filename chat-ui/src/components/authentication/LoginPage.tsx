@@ -22,7 +22,10 @@ const LoginPage = (): JSX.Element => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    if (localStorage.getItem("authToken")) {
+    if (
+      localStorage.getItem("authToken") &&
+      localStorage.getItem("userDetails")
+    ) {
       navigate("/inbox");
     }
   }, []);

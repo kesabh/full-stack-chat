@@ -1,5 +1,10 @@
 import React, { useRef } from "react";
-import { BellIcon, ChevronDownIcon, Search2Icon } from "@chakra-ui/icons";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  Search2Icon,
+} from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -41,6 +46,7 @@ const Header = (): JSX.Element => {
             <Button
               ref={searchUserBtnRef}
               leftIcon={<Search2Icon />}
+              rightIcon={<ChevronRightIcon />}
               px="20px"
               onClick={onOpen}
               colorScheme="gray"

@@ -20,6 +20,8 @@ import axiosInstace from "../../utils/interceptor";
 import { User } from "../../store/interface/user";
 import UserCard from "./UserCard";
 import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
+import { useAppSelector } from "../../store/hooks";
+import { chatsListProvider } from "../../store/provider/chatsListProvider";
 
 interface SideDrawerForUserSearchProps {
   isOpen: boolean;
@@ -30,6 +32,9 @@ interface SideDrawerForUserSearchProps {
 const SideDrawerForUserSearch = (
   props: SideDrawerForUserSearchProps
 ): JSX.Element => {
+  const chatsList = useAppSelector((state) => state.chatsList);
+  const { updateChatsList } = chatsListProvider();
+
   const { isOpen, onClose, btnRef } = props;
   const [searchText, setSearchText] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,17 +50,19 @@ const SideDrawerForUserSearch = (
   ): Promise<void> => {
     event.preventDefault();
     setLoading(true);
-    if (!searchText) {
-      toast({
-        title: "Warning",
-        description: "Please type some text first",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-        position: "top-left",
-      });
-    }
     try {
+      if (!searchText) {
+        toast({
+          title: "Warning",
+          description: "Please type some text first",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+          position: "top-left",
+        });
+        return;
+      }
+
       const { data } = await axiosInstace.get(apiUrls.SEARCH_USERS, {
         params: { searchText },
       });
@@ -79,6 +86,28 @@ const SideDrawerForUserSearch = (
     }
   };
 
+  const handleStartNewChat = async (
+    event: React.MouseEvent<HTMLElement>,
+    userDetails: User
+  ): Promise<void> => {
+    try {
+      const payload = {
+        users: [userDetails.userId],
+        chatName: userDetails.name,
+      };
+      const { data } = await axiosInstace.post(
+        apiUrls.CREATE_NEW_CHAT,
+        payload
+      );
+      if (data.data && data.success) {
+        updateChatsList([data.data, ...chatsList]);
+        onClose();
+      }
+    } catch (e) {
+      console.error("error while creating new chat", e);
+    }
+  };
+
   return (
     <>
       <Drawer
@@ -97,6 +126,7 @@ const SideDrawerForUserSearch = (
             <form onSubmit={searchUsers}>
               <Box display="flex" justifyContent="space-between">
                 <Input
+                  autoFocus={true}
                   fontSize={"14px"}
                   mr={"10px"}
                   placeholder="Search by name or email ..."
@@ -120,7 +150,13 @@ const SideDrawerForUserSearch = (
             ) : (
               <>
                 {users.map((user: User, idx: number) => {
-                  return <UserCard user={user} key={idx}></UserCard>;
+                  return (
+                    <UserCard
+                      user={user}
+                      key={idx}
+                      handleStartNewChat={handleStartNewChat}
+                    ></UserCard>
+                  );
                 })}
               </>
             )}
