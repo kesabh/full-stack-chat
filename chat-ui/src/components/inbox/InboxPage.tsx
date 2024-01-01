@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "./Header";
 import ChatsList from "./ChatsList";
 import ChatBox from "./ChatBox";
@@ -7,29 +7,111 @@ import { useNavigate } from "react-router-dom";
 import { apiUrls } from "../../apiUrls";
 import axiosInstace from "../../utils/interceptor";
 import { chatsListProvider } from "../../store/provider/chatsListProvider";
+import { useAppSelector } from "../../store/hooks";
+import { Chat, Message } from "../../store/interface/chat";
+import { User } from "../../store/interface/user";
+import { getStore } from "../../store/store";
+import { io } from "socket.io-client";
+import { socket } from "../../socket";
 
 const InboxPage = (): JSX.Element => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  // const [socket, setSocket] = useState
+  const bottomDivRef = useRef(null);
+
+  const activeChat = useAppSelector((state) => state.activeChat);
+  const userFromStore = useAppSelector((state) => state.user);
+
+  const sendMessage = async (content: string): Promise<void> => {
+    const payload = {
+      content,
+      chatId: activeChat._id,
+      sender: userFromStore.userId,
+    };
+    setMessages([
+      ...messages,
+      { ...payload, sender: { ...userFromStore, _id: userFromStore.userId } },
+    ]);
+    // axiosInstace.post(apiUrls.SEND_MESSAGE, payload);
+    const receivers = activeChat.users
+      .filter((user: User) => user.userId !== userFromStore.userId)
+      .map((user: User) => user.userId);
+
+    socket.emit("send_message", {
+      message: { ...payload, sender: userFromStore },
+      receivers,
+    });
+  };
+
+  const fetchMessagesForActiveChat = async (): Promise<void> => {
+    try {
+      const { data } = await axiosInstace.get(apiUrls.GET_MESSAGES, {
+        params: { chatId: getStore().state.activeChat._id },
+      });
+      if (data.data && data.success) {
+        setMessages(data.data);
+      }
+    } catch (e) {
+      console.error("error occurred while fetching messages", e);
+    }
+  };
+
   useEffect(() => {
     if (!localStorage.getItem("authToken")) navigate("/login");
 
-    try {
-      setLoading(true);
-      const fetchAllChats = async (): Promise<void> => {
+    const fetchAllChats = async (): Promise<void> => {
+      try {
+        setLoading(true);
         const { setChatsList } = chatsListProvider();
         const { data } = await axiosInstace.get(apiUrls.FETCH_ALL_CHATS);
         if (data.data && data.success) {
-          setChatsList(data.data);
+          const chats = data.data;
+          chats.forEach((chat: Chat) => {
+            if (!chat.isGroupChat) {
+              chat.users.forEach((user: User) => {
+                if (user.userId !== userFromStore.userId)
+                  chat.chatName = user.name;
+              });
+            }
+          });
+          setChatsList(chats);
         }
-      };
+      } catch (e) {
+        console.error("error while fetching chats", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllChats();
+  }, []);
 
-      fetchAllChats();
-    } catch (e) {
-      console.error("error while fetching chats", e);
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => {
+    bottomDivRef &&
+      bottomDivRef.current &&
+      (bottomDivRef.current as HTMLDivElement).scrollIntoView({
+        behavior: "smooth",
+      });
+  });
+
+  // connect a socket with server
+  useEffect(() => {
+    socket.connect();
+    socket.on("connect", () => {
+      console.log("connection created with server");
+      socket.emit("join_room", userFromStore.userId);
+
+      socket.on("receive_message", (data) => {
+        console.log("message recieved", data);
+        if (data.chatId === activeChat._id)
+          setMessages((prev) => [...prev, data]);
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   return (
@@ -48,10 +130,17 @@ const InboxPage = (): JSX.Element => {
           minH={"100%"}
           overflow={"scroll"}
         >
-          <ChatsList loading={loading} />
+          <ChatsList
+            fetchMessagesForActiveChat={fetchMessagesForActiveChat}
+            loading={loading}
+          />
         </GridItem>
         <GridItem bg={"white"} colSpan={5} borderRadius={"5px"} minH="100%">
-          <ChatBox />
+          <ChatBox
+            bottomDivRef={bottomDivRef}
+            messages={messages}
+            sendMessage={sendMessage}
+          />
         </GridItem>
       </Grid>
     </>

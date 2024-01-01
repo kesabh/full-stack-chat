@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import LoginPage from "./components/authentication/LoginPage";
@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { persistor, reduxStore } from "./store/store";
 import { PersistGate } from "redux-persist/integration/react";
 import "./App.css";
+import { io } from "socket.io-client";
 
 const App = (): JSX.Element => {
   useAxiosInterceptor();

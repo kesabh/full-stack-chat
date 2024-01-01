@@ -2,17 +2,19 @@ import { AddIcon, PlusSquareIcon } from "@chakra-ui/icons";
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import * as React from "react";
 import { useAppSelector } from "../../store/hooks";
-import { Chat } from "../../store/interface/chat";
+import { Chat, Message } from "../../store/interface/chat";
 import ChatItem from "./ChatItem";
 import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 
 interface ChatListProps {
   loading: boolean;
+  fetchMessagesForActiveChat: () => Promise<void>;
 }
 
 const ChatsList = (props: ChatListProps): JSX.Element => {
-  const { loading } = props;
+  const { loading, fetchMessagesForActiveChat } = props;
   const chatsList = useAppSelector((state) => state.chatsList);
+
   return (
     <Box paddingX={"20px"} overflow={"scroll"}>
       <Box
@@ -46,9 +48,11 @@ const ChatsList = (props: ChatListProps): JSX.Element => {
             {chatsList &&
               chatsList.map((chat: Chat, i: number) => {
                 return (
-                  <>
-                    <ChatItem key={i} chat={chat}></ChatItem>
-                  </>
+                  <ChatItem
+                    key={i}
+                    chat={chat}
+                    fetchMessagesForActiveChat={fetchMessagesForActiveChat}
+                  ></ChatItem>
                 );
               })}
           </>

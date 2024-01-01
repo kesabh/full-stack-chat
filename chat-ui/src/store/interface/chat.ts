@@ -1,6 +1,6 @@
 import { User } from "./user";
 
-interface Message {
+export interface Message {
   content: string;
   sender: User;
   chatId: string;
@@ -12,4 +12,5 @@ export interface Chat {
   isGroupChat: boolean;
   groupAdmin: User;
   users: Array<User>;
+  _id: string;
 }

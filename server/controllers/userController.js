@@ -26,8 +26,8 @@ userController.get(
           $and: [
             {
               $or: [
-                { name: { $regex: searchText } },
-                { email: { $regex: searchText } },
+                { name: { $regex: searchText, $options: "i" } },
+                { email: { $regex: searchText, $options: "i" } },
               ],
             },
             {

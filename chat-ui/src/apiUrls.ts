@@ -7,4 +7,6 @@ export const apiUrls: { [index: string]: string } = {
   SEARCH_USERS: `${baseUrl}/users`,
   FETCH_ALL_CHATS: `${baseUrl}/chat`,
   CREATE_NEW_CHAT: `${baseUrl}/chat/create`,
+  SEND_MESSAGE: `${baseUrl}/message`,
+  GET_MESSAGES: `${baseUrl}/message`,
 };

@@ -1,22 +1,8 @@
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  FormErrorMessage,
-  FormHelperText,
-  TabPanel,
-} from "@chakra-ui/react";
+import { Box, Grid, GridItem, Heading } from "@chakra-ui/react";
 import * as React from "react";
 import LoginTabs from "./LoginTabs";
 import { useNavigate } from "react-router-dom";
-import SideDrawerForUserSearch from "../inbox/SideDrawerForUserSearch";
+import { userProvider } from "../../store/provider/userProvider";
 
 const LoginPage = (): JSX.Element => {
   const navigate = useNavigate();
@@ -26,6 +12,8 @@ const LoginPage = (): JSX.Element => {
       localStorage.getItem("authToken") &&
       localStorage.getItem("userDetails")
     ) {
+      const { setUserDetails } = userProvider();
+      setUserDetails(JSON.parse(localStorage.getItem("userDetails") || ""));
       navigate("/inbox");
     }
   }, []);

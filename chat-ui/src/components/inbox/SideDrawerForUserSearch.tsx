@@ -22,6 +22,7 @@ import UserCard from "./UserCard";
 import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import { useAppSelector } from "../../store/hooks";
 import { chatsListProvider } from "../../store/provider/chatsListProvider";
+import { activeChatProvider } from "../../store/provider/activeChatProvider";
 
 interface SideDrawerForUserSearchProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ const SideDrawerForUserSearch = (
   props: SideDrawerForUserSearchProps
 ): JSX.Element => {
   const chatsList = useAppSelector((state) => state.chatsList);
+  const userFromStore = useAppSelector((state) => state.user);
   const { updateChatsList } = chatsListProvider();
 
   const { isOpen, onClose, btnRef } = props;
@@ -42,6 +44,8 @@ const SideDrawerForUserSearch = (
   const [users, setUsers] = useState<Array<User>>([]);
 
   const toast = useToast();
+
+  const { setActiveChat } = activeChatProvider();
 
   const searchUsers = async (
     event:
@@ -86,11 +90,33 @@ const SideDrawerForUserSearch = (
     }
   };
 
+  const chatAlreadyExists = (userId: string): boolean => {
+    for (let idx = 0; idx < chatsList.length; idx++) {
+      const chat = chatsList[idx];
+      if (!chat.isGroupChat) {
+        if (
+          chat.users[0].userId === userId ||
+          chat.users[1].userId === userId
+        ) {
+          setActiveChat(chat);
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   const handleStartNewChat = async (
     event: React.MouseEvent<HTMLElement>,
     userDetails: User
   ): Promise<void> => {
     try {
+      if (chatAlreadyExists(userDetails.userId)) {
+        onClose();
+        return;
+      }
+
       const payload = {
         users: [userDetails.userId],
         chatName: userDetails.name,
@@ -100,7 +126,14 @@ const SideDrawerForUserSearch = (
         payload
       );
       if (data.data && data.success) {
-        updateChatsList([data.data, ...chatsList]);
+        const chat = { ...data.data };
+        if (!chat.isGroupChat) {
+          chat.users.forEach((user: User) => {
+            if (user.userId !== userFromStore.userId) chat.chatName = user.name;
+          });
+        }
+        updateChatsList([chat, ...chatsList]);
+        setActiveChat(chat);
         onClose();
       }
     } catch (e) {
