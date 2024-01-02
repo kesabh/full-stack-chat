@@ -29,8 +29,28 @@ io.on("connection", (clientSocket) => {
   clientSocket.on("send_message", (data) => {
     console.log("msg sent with data", data);
     data.receivers.forEach((receiverId) => {
-      if (clientSocket.adapter.rooms.get(receiverId))   {
+      if (clientSocket.adapter.rooms.get(receiverId)) {
         clientSocket.to(receiverId).emit("receive_message", data.message);
+      }
+    });
+  });
+
+  clientSocket.on("user_typing", (data) => {
+    console.log("user is typing");
+    data.receivers.forEach((receiverId) => {
+      if (clientSocket.adapter.rooms.get(receiverId)) {
+        clientSocket.to(receiverId).emit("show_loader_for_user_typing", data);
+      }
+    });
+  });
+
+  clientSocket.on("stop_typing", (data) => {
+    console.log("stop user from typing");
+    data.receivers.forEach((receiverId) => {
+      if (clientSocket.adapter.rooms.get(receiverId)) {
+        clientSocket
+          .to(receiverId)
+          .emit("hide_loader_for_stopped_typing", data);
       }
     });
   });

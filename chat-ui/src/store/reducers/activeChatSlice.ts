@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Chat } from "../interface/chat";
 import { initialUserState } from "./userSlice";
 
-const initialActiveChatState: Chat = {
+export const initialActiveChatState: Chat = {
   chatName: "",
   isGroupChat: false,
   groupAdmin: initialUserState,

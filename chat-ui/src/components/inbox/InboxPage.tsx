@@ -11,18 +11,25 @@ import { useAppSelector } from "../../store/hooks";
 import { Chat, Message } from "../../store/interface/chat";
 import { User } from "../../store/interface/user";
 import { getStore } from "../../store/store";
-import { io } from "socket.io-client";
 import { socket } from "../../socket";
+import { initialActiveChatState } from "../../store/reducers/activeChatSlice";
+import { activeChatProvider } from "../../store/provider/activeChatProvider";
+import { userTyping } from "./interface/chatBox";
 
 const InboxPage = (): JSX.Element => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  // const [socket, setSocket] = useState
+  const [userTypingLoader, setUserTypingLoader] = useState<userTyping>({
+    isTyping: false,
+    name: "",
+  });
   const bottomDivRef = useRef(null);
 
   const activeChat = useAppSelector((state) => state.activeChat);
   const userFromStore = useAppSelector((state) => state.user);
+
+  const { setActiveChat } = activeChatProvider();
 
   const sendMessage = async (content: string): Promise<void> => {
     const payload = {
@@ -34,7 +41,7 @@ const InboxPage = (): JSX.Element => {
       ...messages,
       { ...payload, sender: { ...userFromStore, _id: userFromStore.userId } },
     ]);
-    // axiosInstace.post(apiUrls.SEND_MESSAGE, payload);
+    axiosInstace.post(apiUrls.SEND_MESSAGE, payload);
     const receivers = activeChat.users
       .filter((user: User) => user.userId !== userFromStore.userId)
       .map((user: User) => user.userId);
@@ -43,6 +50,14 @@ const InboxPage = (): JSX.Element => {
       message: { ...payload, sender: userFromStore },
       receivers,
     });
+
+    socket.emit("stop_typing", {
+      chatId: activeChat._id,
+      userFromStore,
+      receivers,
+    });
+
+    setUserTypingLoader({ isTyping: false, name: "" });
   };
 
   const fetchMessagesForActiveChat = async (): Promise<void> => {
@@ -59,7 +74,10 @@ const InboxPage = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (!localStorage.getItem("authToken")) navigate("/login");
+    if (!localStorage.getItem("authToken")) {
+      navigate("/login");
+      return;
+    }
 
     const fetchAllChats = async (): Promise<void> => {
       try {
@@ -85,6 +103,7 @@ const InboxPage = (): JSX.Element => {
       }
     };
     fetchAllChats();
+    setActiveChat(initialActiveChatState);
   }, []);
 
   useEffect(() => {
@@ -103,9 +122,33 @@ const InboxPage = (): JSX.Element => {
       socket.emit("join_room", userFromStore.userId);
 
       socket.on("receive_message", (data) => {
-        console.log("message recieved", data);
+        const activeChat = getStore().state.activeChat;
+
         if (data.chatId === activeChat._id)
           setMessages((prev) => [...prev, data]);
+      });
+
+      socket.on("show_loader_for_user_typing", (data) => {
+        const activeChat = getStore().state.activeChat;
+
+        console.log("show typing indicator");
+        if (data.chatId === activeChat._id) {
+          console.log("show_loader_for_user_typing", data);
+          setUserTypingLoader({
+            isTyping: true,
+            name: data.userFromStore.name,
+          });
+        }
+      });
+
+      socket.on("hide_loader_for_stopped_typing", (data) => {
+        const activeChat = getStore().state.activeChat;
+
+        console.log("hide typing indicators");
+        if (data.chatId === activeChat._id) {
+          console.log("hide_loader_for_stopped_typing", data);
+          setUserTypingLoader({ isTyping: false, name: "" });
+        }
       });
     });
 
@@ -140,6 +183,8 @@ const InboxPage = (): JSX.Element => {
             bottomDivRef={bottomDivRef}
             messages={messages}
             sendMessage={sendMessage}
+            userTypingLoader={userTypingLoader}
+            setUserTypingLoader={setUserTypingLoader}
           />
         </GridItem>
       </Grid>
