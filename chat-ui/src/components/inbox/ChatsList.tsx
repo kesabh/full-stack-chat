@@ -66,7 +66,6 @@ const ChatsList = (props: ChatListProps): JSX.Element => {
       </Box>
 
       <CreateGroupChatModal
-        onOpen={onOpen}
         isOpen={isOpen}
         onClose={onClose}
       ></CreateGroupChatModal>

@@ -6,14 +6,14 @@ import { useAppSelector } from "../../store/hooks";
 
 interface UserCardProps {
   user: User;
-  handleStartNewChat: (
+  onCardClick?: (
     event: React.MouseEvent<HTMLElement>,
     userDetails: User
-  ) => Promise<void>;
+  ) => Promise<void> | void;
 }
 
 const UserCard = (props: UserCardProps): JSX.Element => {
-  const { user, handleStartNewChat } = props;
+  const { user, onCardClick } = props;
 
   return (
     <Card
@@ -25,7 +25,7 @@ const UserCard = (props: UserCardProps): JSX.Element => {
       alignItems={"center"}
       padding={"10px"}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
-        handleStartNewChat(e, user);
+        onCardClick && onCardClick(e, user);
       }}
       _hover={{ background: "darkcyan", cursor: "pointer", color: "white" }}
     >

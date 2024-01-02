@@ -187,7 +187,7 @@ const SideDrawerForUserSearch = (
                     <UserCard
                       user={user}
                       key={idx}
-                      handleStartNewChat={handleStartNewChat}
+                      onCardClick={handleStartNewChat}
                     ></UserCard>
                   );
                 })}

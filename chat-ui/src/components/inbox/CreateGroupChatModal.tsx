@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -11,13 +11,15 @@ import {
   ModalHeader,
   ModalOverlay,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import axiosInstace from "../../utils/interceptor";
 import { apiUrls } from "../../apiUrls";
 import { User } from "../../store/interface/user";
+import UserCard from "./UserCard";
+import { BeatLoader } from "react-spinners";
 
 interface CreateGroupChatMOdalProps {
-  onOpen: () => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -25,16 +27,40 @@ interface CreateGroupChatMOdalProps {
 const CreateGroupChatModal = (
   props: CreateGroupChatMOdalProps
 ): JSX.Element => {
-  const { isOpen, onClose, onOpen } = props;
+  const { isOpen, onClose } = props;
 
   const [chatName, setChatName] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [users, setUsers] = useState<Array<User>>([]);
+  const [addedUsers, setAddedUsers] = useState<Array<User>>([]);
+
+  const toast = useToast();
 
   const searchUsersUtil = async (text: string): Promise<void> => {
-    const { data } = await axiosInstace.get(apiUrls.SEARCH_USERS, {
-      params: { searchText: text },
-    });
-    // console.log(data);
+    setLoading(true);
+    try {
+      const { data } = await axiosInstace.get(apiUrls.SEARCH_USERS, {
+        params: { searchText: text },
+      });
+      if (data.data) {
+        setUsers(data.data);
+        if (data.data && data.data.length == 0) {
+          toast({
+            title: "Error",
+            description: "No Users found",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "bottom",
+          });
+        }
+      }
+    } catch (e) {
+      console.error("error while fetching users", e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const debouncedFn = useCallback((fn: (text: string) => Promise<void>) => {
@@ -53,10 +79,20 @@ const CreateGroupChatModal = (
 
   const searchUsers = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchText(event.target.value);
-
-    //debounce fn here
     debouncedSearch(event.target.value);
   };
+
+  const addToGroupChatUsersList = (
+    event: React.MouseEvent<HTMLElement>,
+    user: User
+  ) => {
+    setAddedUsers((prev) => [...prev, user]);
+  };
+
+  useEffect(() => {
+    setUsers([]);
+    setSearchText("");
+  }, [isOpen]);
 
   return (
     <>
@@ -84,6 +120,24 @@ const CreateGroupChatModal = (
                 onChange={searchUsers}
               />
             </Box>
+
+            {loading ? (
+              <Box textAlign={"center"} mt={"10px"}>
+                <BeatLoader size={10} />
+              </Box>
+            ) : (
+              <>
+                {users.map((user: User, idx: number) => {
+                  return (
+                    <UserCard
+                      user={user}
+                      key={idx}
+                      onCardClick={addToGroupChatUsersList}
+                    ></UserCard>
+                  );
+                })}
+              </>
+            )}
           </ModalBody>
 
           <ModalFooter>
