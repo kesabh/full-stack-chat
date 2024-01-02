@@ -28,7 +28,7 @@ const ChatContainer = (props: ChatContainerProps): JSX.Element => {
                   key={idx}
                 >
                   <Box
-                    my={"5px"}
+                    my={"1px"}
                     mx={"10px"}
                     paddingY={"3px"}
                     paddingX={"12px"}
@@ -37,7 +37,7 @@ const ChatContainer = (props: ChatContainerProps): JSX.Element => {
                     color={message.sender._id === userId ? "white" : ""}
                     bg={message.sender._id === userId ? "#44bd32" : "#f5f6fa"}
                   >
-                    <Text>{message.content}</Text>
+                    <Text fontSize={"15px"}>{message.content}</Text>
                   </Box>
                 </Box>
               );

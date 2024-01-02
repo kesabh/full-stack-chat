@@ -27,7 +27,6 @@ io.on("connection", (clientSocket) => {
   });
 
   clientSocket.on("send_message", (data) => {
-    console.log("msg sent with data", data);
     data.receivers.forEach((receiverId) => {
       if (clientSocket.adapter.rooms.get(receiverId)) {
         clientSocket.to(receiverId).emit("receive_message", data.message);
@@ -36,7 +35,6 @@ io.on("connection", (clientSocket) => {
   });
 
   clientSocket.on("user_typing", (data) => {
-    console.log("user is typing");
     data.receivers.forEach((receiverId) => {
       if (clientSocket.adapter.rooms.get(receiverId)) {
         clientSocket.to(receiverId).emit("show_loader_for_user_typing", data);
@@ -45,7 +43,6 @@ io.on("connection", (clientSocket) => {
   });
 
   clientSocket.on("stop_typing", (data) => {
-    console.log("stop user from typing");
     data.receivers.forEach((receiverId) => {
       if (clientSocket.adapter.rooms.get(receiverId)) {
         clientSocket

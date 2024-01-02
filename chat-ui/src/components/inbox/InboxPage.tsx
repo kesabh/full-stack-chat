@@ -118,7 +118,6 @@ const InboxPage = (): JSX.Element => {
   useEffect(() => {
     socket.connect();
     socket.on("connect", () => {
-      console.log("connection created with server");
       socket.emit("join_room", userFromStore.userId);
 
       socket.on("receive_message", (data) => {
@@ -131,9 +130,7 @@ const InboxPage = (): JSX.Element => {
       socket.on("show_loader_for_user_typing", (data) => {
         const activeChat = getStore().state.activeChat;
 
-        console.log("show typing indicator");
         if (data.chatId === activeChat._id) {
-          console.log("show_loader_for_user_typing", data);
           setUserTypingLoader({
             isTyping: true,
             name: data.userFromStore.name,
@@ -144,9 +141,7 @@ const InboxPage = (): JSX.Element => {
       socket.on("hide_loader_for_stopped_typing", (data) => {
         const activeChat = getStore().state.activeChat;
 
-        console.log("hide typing indicators");
         if (data.chatId === activeChat._id) {
-          console.log("hide_loader_for_stopped_typing", data);
           setUserTypingLoader({ isTyping: false, name: "" });
         }
       });

@@ -3,6 +3,7 @@ import * as React from "react";
 import { Chat } from "../../store/interface/chat";
 import { activeChatProvider } from "../../store/provider/activeChatProvider";
 import { useAppSelector } from "../../store/hooks";
+import { getStore } from "../../store/store";
 
 interface ChatItemProps {
   chat: Chat;
@@ -11,9 +12,16 @@ interface ChatItemProps {
 
 const ChatItem = (props: ChatItemProps): JSX.Element => {
   const { chat, fetchMessagesForActiveChat } = props;
+  const userFromStore = useAppSelector((state) => state.user);
 
   const activeChat = useAppSelector((state) => state.activeChat);
   const { setActiveChat } = activeChatProvider();
+
+  const getUserImageSrc = (chat: Chat): string | undefined => {
+    if (chat.users[0].userId !== userFromStore.userId)
+      return chat.users[0].profilePicture;
+    else return chat.users[1].profilePicture;
+  };
 
   return (
     <Card
@@ -25,6 +33,7 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
       alignItems={"center"}
       padding={"10px"}
       onClick={(e: React.MouseEvent<HTMLElement>) => {
+        if (getStore().state.activeChat._id === chat._id) return;
         setActiveChat(chat);
         fetchMessagesForActiveChat();
       }}
@@ -33,13 +42,14 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
       color={activeChat._id === chat._id ? "white" : ""}
     >
       <Box>
-        <Avatar size="sm" src={""} />
+        <Avatar size="sm" src={getUserImageSrc(chat)} />
       </Box>
       <Box>
-        <Text fontSize="14px">{chat.chatName}</Text>
+        <Text fontSize="14px" as="b">
+          {chat.chatName}
+        </Text>
         <Text fontSize={"12px"}>
-          <Text as="b">Email: </Text>
-          {/* {chat.email} */}
+          <Text>{chat.latestMessage?.content} </Text>
         </Text>
       </Box>
     </Card>
