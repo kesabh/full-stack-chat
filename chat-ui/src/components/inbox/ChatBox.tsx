@@ -108,7 +108,7 @@ const ChatBox = (props: ChatBoxProps) => {
               bottomDivRef={bottomDivRef}
               messages={messages}
             ></ChatContainer>
-            {
+            {userTypingLoader.isTyping && (
               <Box
                 width={"fit-content"}
                 display={"flex"}
@@ -124,7 +124,7 @@ const ChatBox = (props: ChatBoxProps) => {
                 </Text>
                 <BeatLoader size={6} />
               </Box>
-            }
+            )}
           </Box>
           <Box mt="8px">
             <Input
