@@ -1,7 +1,7 @@
 import express from "express";
 import { userModel } from "../schemas/userSchema.js";
 import asyncHandler from "express-async-handler";
-import { generateAuthToken } from "./../config/generateAuthToken.js";
+import { generateAuthToken } from "../utils/generateAuthToken.js";
 import bcrypt from "bcryptjs";
 
 const authController = express.Router();

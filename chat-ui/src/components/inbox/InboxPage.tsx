@@ -19,6 +19,7 @@ import { userTyping } from "./interface/chatBox";
 const InboxPage = (): JSX.Element => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
+  const [msgsLoading, setMsgsLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userTypingLoader, setUserTypingLoader] = useState<userTyping>({
     isTyping: false,
@@ -62,6 +63,7 @@ const InboxPage = (): JSX.Element => {
 
   const fetchMessagesForActiveChat = async (): Promise<void> => {
     try {
+      setMsgsLoading(true);
       const { data } = await axiosInstace.get(apiUrls.GET_MESSAGES, {
         params: { chatId: getStore().state.activeChat._id },
       });
@@ -70,6 +72,8 @@ const InboxPage = (): JSX.Element => {
       }
     } catch (e) {
       console.error("error occurred while fetching messages", e);
+    } finally {
+      setMsgsLoading(false);
     }
   };
 
@@ -175,6 +179,7 @@ const InboxPage = (): JSX.Element => {
         </GridItem>
         <GridItem bg={"white"} colSpan={5} borderRadius={"5px"} minH="100%">
           <ChatBox
+            loading={msgsLoading}
             bottomDivRef={bottomDivRef}
             messages={messages}
             sendMessage={sendMessage}

@@ -7,14 +7,15 @@ import { BeatLoader } from "react-spinners";
 interface ChatContainerProps {
   messages: Message[];
   bottomDivRef: React.MutableRefObject<null>;
+  loading: boolean;
 }
 const ChatContainer = (props: ChatContainerProps): JSX.Element => {
-  const { messages, bottomDivRef } = props;
+  const { messages, bottomDivRef, loading } = props;
   const userId = useAppSelector((state) => state.user).userId;
 
   return (
     <>
-      {messages.length > 0 ? (
+      {!loading ? (
         <Box>
           {messages.length > 0 &&
             messages.map((message, idx) => {

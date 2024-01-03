@@ -1,7 +1,7 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { userModel } from "../schemas/userSchema.js";
-import { authValidator } from "../config/authValidator.js";
+import { authValidator } from "../utils/authValidator.js";
 
 const userController = express.Router();
 

@@ -18,9 +18,12 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
   const { setActiveChat } = activeChatProvider();
 
   const getUserImageSrc = (chat: Chat): string | undefined => {
-    if (chat.users[0].userId !== userFromStore.userId)
-      return chat.users[0].profilePicture;
-    else return chat.users[1].profilePicture;
+    if (!chat.isGroupChat) {
+      if (chat.users[0].userId !== userFromStore.userId)
+        return chat.users[0].profilePicture;
+      else return chat.users[1].profilePicture;
+    }
+    return "";
   };
 
   return (

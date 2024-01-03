@@ -17,11 +17,17 @@ interface ChatBoxProps {
   bottomDivRef: React.MutableRefObject<null>;
   userTypingLoader: userTyping;
   setUserTypingLoader: React.Dispatch<React.SetStateAction<userTyping>>;
+  loading: boolean;
 }
 
 const ChatBox = (props: ChatBoxProps) => {
-  const { messages, bottomDivRef, userTypingLoader, setUserTypingLoader } =
-    props;
+  const {
+    messages,
+    bottomDivRef,
+    userTypingLoader,
+    setUserTypingLoader,
+    loading,
+  } = props;
   const [msgText, setMsgText] = useState("");
 
   const activeChat = useAppSelector((state) => state.activeChat);
@@ -105,6 +111,7 @@ const ChatBox = (props: ChatBoxProps) => {
             py={"5px"}
           >
             <ChatContainer
+              loading={loading}
               bottomDivRef={bottomDivRef}
               messages={messages}
             ></ChatContainer>

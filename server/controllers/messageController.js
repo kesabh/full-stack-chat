@@ -1,6 +1,6 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import { authValidator } from "../config/authValidator.js";
+import { authValidator } from "../utils/authValidator.js";
 import { messageModel } from "../schemas/messageSchema.js";
 import { chatModel } from "../schemas/chatSchema.js";
 

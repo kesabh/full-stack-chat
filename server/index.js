@@ -7,9 +7,9 @@ import http from "http";
 import { connectMongoDB } from "./config/monogdb.js";
 import { authController } from "./controllers/authController.js";
 import { userController } from "./controllers/userController.js";
-import { authValidator } from "./config/authValidator.js";
 import { chatController } from "./controllers/chatController.js";
 import { messageController } from "./controllers/messageController.js";
+import { groupChatController } from "./controllers/groupChatController.js";
 
 const app = express();
 
@@ -63,6 +63,6 @@ app.use("/auth", authController);
 app.use("/users", userController);
 app.use("/chat", chatController);
 app.use("/message", messageController);
+app.use("/group", groupChatController);
 
-userController.use(authValidator);
 httpServer.listen(5000);

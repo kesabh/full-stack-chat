@@ -30,7 +30,7 @@ const UserCard = (props: UserCardProps): JSX.Element => {
       _hover={{ background: "darkcyan", cursor: "pointer", color: "white" }}
     >
       <Box>
-        <Avatar size="sm" src={user.profilePicture} />
+        <Avatar size="sm" src={user.profilePicture || ""} />
       </Box>
       <Box>
         <Text fontSize="14px">{user.name}</Text>
