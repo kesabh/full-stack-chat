@@ -20,7 +20,7 @@ const App = (): JSX.Element => {
           <ChakraProvider>
             <Router>
               <Routes>
-                <Route path="/login" element={<LoginPage />}></Route>
+                <Route path="/" element={<LoginPage />}></Route>
                 <Route path="/inbox" element={<InboxPage />}></Route>
               </Routes>
             </Router>

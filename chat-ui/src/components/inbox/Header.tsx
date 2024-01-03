@@ -22,10 +22,22 @@ import {
 } from "@chakra-ui/react";
 import ProfileIcon from "./ProfileIcon";
 import SideDrawerForUserSearch from "./SideDrawerForUserSearch";
+import { useNavigate } from "react-router-dom";
+import { resetStoreProvider } from "../../store/provider/rsetStoreProvider";
 
 const Header = (): JSX.Element => {
   const searchUserBtnRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const navigate = useNavigate();
+
+  const logoutUser = (): void => {
+    const { resetStore } = resetStoreProvider();
+    resetStore();
+    sessionStorage.clear();
+    localStorage.clear();
+    navigate("/");
+  };
 
   return (
     <header>
@@ -85,7 +97,7 @@ const Header = (): JSX.Element => {
                 <MenuList>
                   <MenuItem>My Profile</MenuItem>
                   <MenuDivider />
-                  <MenuItem>Logout</MenuItem>
+                  <MenuItem onClick={logoutUser}>Logout</MenuItem>
                 </MenuList>
               </Menu>
             </Box>

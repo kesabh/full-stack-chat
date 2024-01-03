@@ -79,7 +79,7 @@ const InboxPage = (): JSX.Element => {
 
   useEffect(() => {
     if (!localStorage.getItem("authToken")) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 
@@ -160,7 +160,7 @@ const InboxPage = (): JSX.Element => {
     <>
       <Header></Header>
       <Grid
-        templateColumns="repeat(7, 1fr)"
+        templateColumns="repeat(8, 1fr)"
         gap={"20px"}
         padding={"20px"}
         h="calc(100vh - 50px)"
@@ -177,7 +177,7 @@ const InboxPage = (): JSX.Element => {
             loading={loading}
           />
         </GridItem>
-        <GridItem bg={"white"} colSpan={5} borderRadius={"5px"} minH="100%">
+        <GridItem bg={"white"} colSpan={6} borderRadius={"5px"} minH="100%">
           <ChatBox
             loading={msgsLoading}
             bottomDivRef={bottomDivRef}

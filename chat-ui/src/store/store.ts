@@ -9,6 +9,7 @@ import {
 import { reducer } from "./reducer";
 import { persistReducer, persistStore } from "redux-persist";
 import storageSession from "redux-persist/lib/storage/session";
+import { RESET_STORE } from "./provider/rsetStoreProvider";
 
 const persistConfig = {
   key: "root",
@@ -16,6 +17,7 @@ const persistConfig = {
 };
 
 const rootReducer: Reducer = (state: RootState, action: Action) => {
+  if (action.type === RESET_STORE) state = undefined;
   return reducer(state, action);
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
