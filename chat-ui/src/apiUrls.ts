@@ -9,5 +9,6 @@ export const apiUrls: { [index: string]: string } = {
   CREATE_NEW_CHAT: `${baseUrl}/chat/create`,
   SEND_MESSAGE: `${baseUrl}/message`,
   GET_MESSAGES: `${baseUrl}/message`,
-  CREATE_GROUP_CHAT: `${baseUrl}/group/create`,
+  CREATE_GROUP_CHAT: `${baseUrl}/group/`,
+  UPDATE_GROUP_CHAT: `${baseUrl}/group/`,
 };

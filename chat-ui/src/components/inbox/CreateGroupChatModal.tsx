@@ -13,7 +13,6 @@ import {
   Tag,
   TagCloseButton,
   TagLabel,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import axiosInstace from "../../utils/interceptor";
@@ -24,16 +23,18 @@ import { BeatLoader } from "react-spinners";
 import { useAppSelector } from "../../store/hooks";
 import { activeChatProvider } from "../../store/provider/activeChatProvider";
 import { chatsListProvider } from "../../store/provider/chatsListProvider";
+import { Chat } from "../../store/interface/chat";
 
 interface CreateGroupChatMOdalProps {
   isOpen: boolean;
   onClose: () => void;
+  editMode?: "EDIT" | "VIEW";
 }
 
 const CreateGroupChatModal = (
   props: CreateGroupChatMOdalProps
 ): JSX.Element => {
-  const { isOpen, onClose } = props;
+  const { isOpen, onClose, editMode } = props;
 
   const [chatName, setChatName] = useState<string>("");
   const [searchText, setSearchText] = useState<string>("");
@@ -42,6 +43,8 @@ const CreateGroupChatModal = (
   const [addedUsers, setAddedUsers] = useState<Array<User>>([]);
 
   const chatsList = useAppSelector((state) => state.chatsList);
+  const activeChat = useAppSelector((state) => state.activeChat);
+
   const { setActiveChat } = activeChatProvider();
   const { updateChatsList } = chatsListProvider();
 
@@ -95,19 +98,20 @@ const CreateGroupChatModal = (
   const addToGroupChatUsersList = (
     event: React.MouseEvent<HTMLElement>,
     user: User
-  ) => {
+  ): void => {
     if (addedUsers.indexOf(user) > -1) return;
     setAddedUsers((prev) => [...prev, user]);
   };
 
-  const removeFromGroupChatUsersList = (userToBeRemoved: User) => {
+  const removeFromGroupChatUsersList = (userToBeRemoved: User): void => {
+    if (editMode === "VIEW") return;
     const newList = addedUsers.filter(
       (user: User) => user.userId !== userToBeRemoved.userId
     );
     setAddedUsers(newList);
   };
 
-  const handleCreateGroupChat = async (): Promise<void> => {
+  const saveGroupChat = async (): Promise<void> => {
     try {
       if (!chatName) {
         toast({
@@ -136,15 +140,26 @@ const CreateGroupChatModal = (
         users: addedUsers.map((user: User) => user.userId),
         chatName: chatName.trim(),
       };
-      const { data } = await axiosInstace.post(
-        apiUrls.CREATE_GROUP_CHAT,
-        payload
-      );
+      const { data } =
+        editMode === "EDIT"
+          ? await axiosInstace.put(apiUrls.UPDATE_GROUP_CHAT, {
+              ...payload,
+              chatId: activeChat._id,
+            })
+          : await axiosInstace.post(apiUrls.CREATE_GROUP_CHAT, payload);
       if (data.data && data.success) {
-        console.log("data", data.data);
-        const chat = { ...data.data };
-        updateChatsList([chat, ...chatsList]);
-        setActiveChat(chat);
+        const chatResponse = { ...data.data };
+        const updatedChatsList =
+          editMode === "EDIT"
+            ? chatsList.map((chat: Chat) => {
+                if (chatResponse._id === chat._id) return chatResponse;
+                else return chat;
+              })
+            : [chatResponse, ...chatsList];
+        updateChatsList(updatedChatsList);
+        if (editMode !== "EDIT") {
+          setActiveChat(chatResponse);
+        }
         onClose();
       }
     } catch (e) {
@@ -155,8 +170,8 @@ const CreateGroupChatModal = (
   useEffect(() => {
     setUsers([]);
     setSearchText("");
-    setChatName("");
-    setAddedUsers([]);
+    setChatName(editMode ? activeChat.chatName : "");
+    setAddedUsers(editMode ? activeChat.users : []);
   }, [isOpen]);
 
   return (
@@ -164,11 +179,14 @@ const CreateGroupChatModal = (
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Create Group Chat</ModalHeader>
+          <ModalHeader>
+            {!editMode ? "Create Group Chat" : activeChat.chatName}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box mb={"10px"}>
               <Input
+                readOnly={editMode === "VIEW"}
                 type="text"
                 placeholder="Enter chat name..."
                 value={chatName}
@@ -179,6 +197,7 @@ const CreateGroupChatModal = (
             </Box>
             <Box>
               <Input
+                disabled={editMode === "VIEW"}
                 type="text"
                 placeholder="Search user..."
                 value={searchText}
@@ -230,13 +249,16 @@ const CreateGroupChatModal = (
             <Button colorScheme="blue" variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              variant="solid"
-              colorScheme="green"
-              onClick={handleCreateGroupChat}
-            >
-              Create Chat
-            </Button>
+
+            {(editMode === "EDIT" || !editMode) && (
+              <Button
+                variant="solid"
+                colorScheme="green"
+                onClick={saveGroupChat}
+              >
+                {editMode === "EDIT" ? "Save" : "Create Chat"}
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

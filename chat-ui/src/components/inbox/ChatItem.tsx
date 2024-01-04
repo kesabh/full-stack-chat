@@ -4,6 +4,7 @@ import { Chat } from "../../store/interface/chat";
 import { activeChatProvider } from "../../store/provider/activeChatProvider";
 import { useAppSelector } from "../../store/hooks";
 import { getStore } from "../../store/store";
+import { getUserImageSrc } from "./utils/getUserImageSrc";
 
 interface ChatItemProps {
   chat: Chat;
@@ -12,19 +13,9 @@ interface ChatItemProps {
 
 const ChatItem = (props: ChatItemProps): JSX.Element => {
   const { chat, fetchMessagesForActiveChat } = props;
-  const userFromStore = useAppSelector((state) => state.user);
 
   const activeChat = useAppSelector((state) => state.activeChat);
   const { setActiveChat } = activeChatProvider();
-
-  const getUserImageSrc = (chat: Chat): string | undefined => {
-    if (!chat.isGroupChat) {
-      if (chat.users[0].userId !== userFromStore.userId)
-        return chat.users[0].profilePicture;
-      else return chat.users[1].profilePicture;
-    }
-    return "";
-  };
 
   return (
     <Card
@@ -35,7 +26,7 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
       mt="10px"
       alignItems={"center"}
       padding={"10px"}
-      onClick={(e: React.MouseEvent<HTMLElement>) => {
+      onClick={(e: React.MouseEvent<HTMLElement>): void => {
         if (getStore().state.activeChat._id === chat._id) return;
         setActiveChat(chat);
         fetchMessagesForActiveChat();

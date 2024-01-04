@@ -1,4 +1,4 @@
-import { Box, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Input, Text, useDisclosure } from "@chakra-ui/react";
 import * as React from "react";
 import { useState } from "react";
 import ChatContainer from "./ChatContainer";
@@ -9,6 +9,9 @@ import { User } from "../../store/interface/user";
 import { userTyping } from "./interface/chatBox";
 import { BeatLoader } from "react-spinners";
 import { getStore } from "../../store/store";
+import { ViewIcon } from "@chakra-ui/icons";
+import ChatInfoModal from "./ChatInfoModal";
+import CreateGroupChatModal from "./CreateGroupChatModal";
 
 /* eslint-disable */
 interface ChatBoxProps {
@@ -29,6 +32,7 @@ const ChatBox = (props: ChatBoxProps) => {
     loading,
   } = props;
   const [msgText, setMsgText] = useState("");
+  const { onOpen, isOpen, onClose } = useDisclosure();
 
   const activeChat = useAppSelector((state) => state.activeChat);
 
@@ -81,7 +85,8 @@ const ChatBox = (props: ChatBoxProps) => {
 
   return (
     <Box
-      padding={"10px"}
+      paddingX={"10px"}
+      pb="10px"
       h="calc(100vh - 50px - 40px)"
       display={"flex"}
       justifyContent={"flex-between"}
@@ -102,6 +107,23 @@ const ChatBox = (props: ChatBoxProps) => {
         </Box>
       ) : (
         <>
+          <Box
+            bg="white"
+            mx={"-10px"}
+            borderRadius={"5px"}
+            p={"10px"}
+            mb="10px"
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Text fontSize={"20px"} fontWeight={"500"} ml={"15px"}>
+              {activeChat.chatName}
+            </Text>
+            <Button onClick={onOpen}>
+              <ViewIcon></ViewIcon>
+            </Button>
+          </Box>
           <Box
             display={"flex"}
             borderRadius={"5px"}
@@ -143,6 +165,20 @@ const ChatBox = (props: ChatBoxProps) => {
             ></Input>
           </Box>
         </>
+      )}
+
+      {activeChat.isGroupChat ? (
+        <CreateGroupChatModal
+          isOpen={isOpen}
+          onClose={onClose}
+          editMode={
+            activeChat.groupAdmin.userId === userFromStore.userId
+              ? "EDIT"
+              : "VIEW"
+          }
+        />
+      ) : (
+        <ChatInfoModal isOpen={isOpen} onClose={onClose}></ChatInfoModal>
       )}
     </Box>
   );
