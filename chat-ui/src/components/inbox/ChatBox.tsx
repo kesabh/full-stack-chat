@@ -12,6 +12,7 @@ import { getStore } from "../../store/store";
 import { ViewIcon } from "@chakra-ui/icons";
 import ChatInfoModal from "./ChatInfoModal";
 import CreateGroupChatModal from "./CreateGroupChatModal";
+import { getUserImageSrc } from "./utils/getUserImageSrc";
 
 /* eslint-disable */
 interface ChatBoxProps {
@@ -137,24 +138,24 @@ const ChatBox = (props: ChatBoxProps) => {
               bottomDivRef={bottomDivRef}
               messages={messages}
             ></ChatContainer>
-            {userTypingLoader.isTyping && (
-              <Box
-                width={"fit-content"}
-                display={"flex"}
-                alignItems={"center"}
-                fontSize={"12px"}
-                bg={"lightgray"}
-                paddingX="5px"
-                borderRadius={"5px"}
-                mt="5px"
-              >
-                <Text mr={"5px"}>
-                  {userTypingLoader.name.split(" ")[0]} is typing
-                </Text>
-                <BeatLoader size={6} />
-              </Box>
-            )}
           </Box>
+          {userTypingLoader.isTyping && (
+            <Box
+              width={"fit-content"}
+              display={"flex"}
+              alignItems={"center"}
+              fontSize={"12px"}
+              bg={"lightgray"}
+              paddingX="5px"
+              borderRadius={"5px"}
+              mt="5px"
+            >
+              <Text mr={"5px"}>
+                {userTypingLoader.name.split(" ")[0]} is typing
+              </Text>
+              <BeatLoader size={6} />
+            </Box>
+          )}
           <Box mt="8px">
             <Input
               bg="white"
@@ -178,7 +179,17 @@ const ChatBox = (props: ChatBoxProps) => {
           }
         />
       ) : (
-        <ChatInfoModal isOpen={isOpen} onClose={onClose}></ChatInfoModal>
+        <ChatInfoModal
+          isOpen={isOpen}
+          onClose={onClose}
+          name={activeChat.chatName}
+          email={
+            userFromStore.email === activeChat.users[0].email
+              ? activeChat.users[1].email
+              : activeChat.users[0].email
+          }
+          profilePicture={getUserImageSrc(activeChat)}
+        ></ChatInfoModal>
       )}
     </Box>
   );

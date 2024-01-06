@@ -15,6 +15,7 @@ import { socket } from "../../socket";
 import { initialActiveChatState } from "../../store/reducers/activeChatSlice";
 import { activeChatProvider } from "../../store/provider/activeChatProvider";
 import { userTyping } from "./interface/chatBox";
+import { notificationsProvider } from "../../store/provider/notificationsProvider";
 
 const InboxPage = (): JSX.Element => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const InboxPage = (): JSX.Element => {
   const userFromStore = useAppSelector((state) => state.user);
 
   const { setActiveChat } = activeChatProvider();
+  const { updateNotifications } = notificationsProvider();
 
   const sendMessage = async (content: string): Promise<void> => {
     const payload = {
@@ -48,7 +50,11 @@ const InboxPage = (): JSX.Element => {
       .map((user: User) => user.userId);
 
     socket.emit("send_message", {
-      message: { ...payload, sender: userFromStore },
+      message: {
+        ...payload,
+        sender: userFromStore,
+        chatName: activeChat.chatName,
+      },
       receivers,
     });
 
@@ -125,10 +131,14 @@ const InboxPage = (): JSX.Element => {
       socket.emit("join_room", userFromStore.userId);
 
       socket.on("receive_message", (data) => {
+        console.log("msg recerived", data);
         const activeChat = getStore().state.activeChat;
 
         if (data.chatId === activeChat._id)
           setMessages((prev) => [...prev, data]);
+        else {
+          updateNotifications({ chatName: data.chatName, chatId: data.chatId });
+        }
       });
 
       socket.on("show_loader_for_user_typing", (data) => {
@@ -158,12 +168,12 @@ const InboxPage = (): JSX.Element => {
 
   return (
     <>
-      <Header></Header>
+      <Header fetchMessagesForActiveChat={fetchMessagesForActiveChat}></Header>
       <Grid
         templateColumns="repeat(8, 1fr)"
         gap={"20px"}
         padding={"20px"}
-        h="calc(100vh - 50px)"
+        h="calc(100vh - 60px)"
       >
         <GridItem
           bg={"white"}

@@ -6,6 +6,7 @@ import {
   Search2Icon,
 } from "@chakra-ui/icons";
 import {
+  Badge,
   Box,
   Button,
   Divider,
@@ -24,10 +25,35 @@ import ProfileIcon from "./ProfileIcon";
 import SideDrawerForUserSearch from "./SideDrawerForUserSearch";
 import { useNavigate } from "react-router-dom";
 import { resetStoreProvider } from "../../store/provider/rsetStoreProvider";
+import ChatInfoModal from "./ChatInfoModal";
+import { useAppSelector } from "../../store/hooks";
+import { Notification } from "../../store/interface/notification";
+import { notificationsProvider } from "../../store/provider/notificationsProvider";
+import { setActiveChat } from "../../store/reducers/activeChatSlice";
+import { activeChatProvider } from "../../store/provider/activeChatProvider";
+import { Chat } from "../../store/interface/chat";
 
-const Header = (): JSX.Element => {
+interface HeaderProps {
+  fetchMessagesForActiveChat: () => Promise<void>;
+}
+
+const Header = (props: HeaderProps): JSX.Element => {
+  const { fetchMessagesForActiveChat } = props;
+
+  const userFromStore = useAppSelector((state) => state.user);
+  const notifications = useAppSelector((state) => state.notifications);
+  const chatsList = useAppSelector((state) => state.chatsList);
+
+  const { deleteNotification } = notificationsProvider();
+  const { setActiveChat } = activeChatProvider();
+
   const searchUserBtnRef = useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenUserInfoModal,
+    onOpen: onOpenUserInfoModal,
+    onClose: onCloseUserInfoModal,
+  } = useDisclosure();
 
   const navigate = useNavigate();
 
@@ -39,13 +65,26 @@ const Header = (): JSX.Element => {
     navigate("/");
   };
 
+  const handleRemoveNotification = (notification: Notification): void => {
+    const chat = chatsList.find((chat: Chat) => {
+      return chat._id === notification.chatId;
+    });
+    chat && setActiveChat(chat);
+    fetchMessagesForActiveChat();
+    deleteNotification(notification);
+  };
+
   return (
     <header>
       <nav>
         <Grid
+          padding={"5px"}
+          borderColor={"gray.200"}
+          borderWidth={"6px"}
+          borderStyle={"solid"}
           templateColumns="repeat(3, 1fr)"
           bg="white"
-          h={"50px"}
+          h={"60px"}
           display={"flex"}
         >
           <GridItem
@@ -85,7 +124,39 @@ const Header = (): JSX.Element => {
             mr={"15px"}
           >
             <Box>
-              <BellIcon width={"25px"} height={"25px"} mr={"10px"}></BellIcon>
+              <Menu>
+                <MenuButton as={Button} variant={"ghost"}>
+                  <BellIcon width={"25px"} height={"25px"}></BellIcon>
+                  {notifications.length > 0 && (
+                    <Badge
+                      variant="solid"
+                      colorScheme="green"
+                      mr="10px"
+                      ml="-5px"
+                      mb="15px"
+                      borderRadius={"100%"}
+                    >
+                      {notifications.length}
+                    </Badge>
+                  )}
+                </MenuButton>
+                <MenuList>
+                  {notifications &&
+                    notifications.map((notification: Notification) => {
+                      return (
+                        <MenuItem
+                          key={notification.chatId}
+                          onClick={(): void => {
+                            handleRemoveNotification(notification);
+                          }}
+                        >
+                          New message from {notification.chatName}
+                        </MenuItem>
+                      );
+                    })}
+                </MenuList>
+              </Menu>
+
               <Menu>
                 <MenuButton
                   as={Button}
@@ -95,7 +166,7 @@ const Header = (): JSX.Element => {
                   <ProfileIcon></ProfileIcon>
                 </MenuButton>
                 <MenuList>
-                  <MenuItem>My Profile</MenuItem>
+                  <MenuItem onClick={onOpenUserInfoModal}>My Profile</MenuItem>
                   <MenuDivider />
                   <MenuItem onClick={logoutUser}>Logout</MenuItem>
                 </MenuList>
@@ -110,6 +181,14 @@ const Header = (): JSX.Element => {
         onClose={onClose}
         btnRef={searchUserBtnRef}
       />
+
+      <ChatInfoModal
+        isOpen={isOpenUserInfoModal}
+        onClose={onCloseUserInfoModal}
+        name={userFromStore.name}
+        email={userFromStore.email}
+        profilePicture={userFromStore.profilePicture}
+      ></ChatInfoModal>
     </header>
   );
 };

@@ -15,6 +15,7 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
   const { chat, fetchMessagesForActiveChat } = props;
 
   const activeChat = useAppSelector((state) => state.activeChat);
+  const userFromStore = useAppSelector((state) => state.user);
   const { setActiveChat } = activeChatProvider();
 
   return (
@@ -43,7 +44,16 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
           {chat.chatName}
         </Text>
         <Text fontSize={"12px"}>
-          <Text>{chat.latestMessage?.content} </Text>
+          {chat.latestMessage?.sender?.name && (
+            <Text fontSize={"10px"} as="span">
+              {" "}
+              {chat.latestMessage?.sender.name === userFromStore.name
+                ? "You"
+                : chat.latestMessage?.sender?.name}
+              :{" "}
+            </Text>
+          )}
+          {chat.latestMessage?.content}{" "}
         </Text>
       </Box>
     </Card>

@@ -17,7 +17,11 @@ chatController.get(
           users: { $elemMatch: { $eq: req.userId } },
         })
         .select("-__v")
-        .populate({ path: "latestMessage", select: "-__v" })
+        .populate({
+          path: "latestMessage",
+          select: "-__v",
+          populate: { path: "sender", select: "-password -__v", model: "User" },
+        })
         .populate({ path: "groupAdmin", select: "-password -__v" })
         .populate({ path: "users", select: "-password -__v" })
         .sort({ "latestMessage.createdAt": "1" })

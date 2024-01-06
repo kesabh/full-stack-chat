@@ -27,7 +27,15 @@ groupChatController.put(
         const chatData = await chatModel
           .find({ _id: result._id })
           .select("-__v")
-          .populate({ path: "latestMessage", select: "-__v" })
+          .populate({
+            path: "latestMessage",
+            select: "-__v",
+            populate: {
+              path: "sender",
+              select: "-password -__v",
+              model: "User",
+            },
+          })
           .populate({ path: "groupAdmin", select: "-password -__v" })
           .populate({ path: "users", select: "-password -__v" })
           .lean();
