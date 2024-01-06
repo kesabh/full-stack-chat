@@ -33,6 +33,7 @@ export const reduxStore = configureStore({
 });
 
 export const getStore = (): {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   dispatch: ThunkDispatch<any, undefined, UnknownAction> &
     Dispatch<UnknownAction>;
   state: RootState;

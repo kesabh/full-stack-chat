@@ -9,7 +9,6 @@ import {
   Badge,
   Box,
   Button,
-  Divider,
   Grid,
   GridItem,
   Heading,
@@ -29,7 +28,6 @@ import ChatInfoModal from "./ChatInfoModal";
 import { useAppSelector } from "../../store/hooks";
 import { Notification } from "../../store/interface/notification";
 import { notificationsProvider } from "../../store/provider/notificationsProvider";
-import { setActiveChat } from "../../store/reducers/activeChatSlice";
 import { activeChatProvider } from "../../store/provider/activeChatProvider";
 import { Chat } from "../../store/interface/chat";
 

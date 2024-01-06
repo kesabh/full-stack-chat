@@ -47,12 +47,14 @@ const SignUp = (): JSX.Element => {
     setFormData(newFormData);
   };
 
-  const handleProfilePictureUpload = async (event: any) => {
+  const handleProfilePictureUpload = async (event: React.FormEvent) => {
     try {
       setLoading(true);
       const payloadFormData = new FormData();
-      console.log(event.target.files[0]);
-      payloadFormData.append("file", event.target.files[0]);
+      payloadFormData.append(
+        "file",
+        (event.target as HTMLFormElement).files[0]
+      );
       payloadFormData.append("cloud_name", "dzmtfzd14");
       payloadFormData.append("upload_preset", "full-stack-chat");
 

@@ -1,8 +1,6 @@
 import { Avatar, Box, Card, Text } from "@chakra-ui/react";
 import * as React from "react";
 import { User } from "../../store/interface/user";
-import { chatsListProvider } from "../../store/provider/chatsListProvider";
-import { useAppSelector } from "../../store/hooks";
 
 interface UserCardProps {
   user: User;

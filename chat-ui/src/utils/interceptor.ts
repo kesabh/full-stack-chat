@@ -10,6 +10,7 @@ const axiosInstace = axios.create();
 export const useAxiosInterceptor = () => {
   useEffect(() => {
     axiosInstace.interceptors.request.use(
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       (config: InternalAxiosRequestConfig<any>): InternalAxiosRequestConfig => {
         const token = localStorage.getItem("authToken") || "";
         if (token && config) {

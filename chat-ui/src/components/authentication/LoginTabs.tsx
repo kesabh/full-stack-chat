@@ -1,19 +1,7 @@
 import * as React from "react";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-} from "@chakra-ui/react";
+import { Box, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 
 const LoginTabs = () => {
   return (

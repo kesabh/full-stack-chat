@@ -1,8 +1,8 @@
-import { AddIcon, PlusSquareIcon } from "@chakra-ui/icons";
-import { Box, Button, Heading, Text, useDisclosure } from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
+import { Box, Button, Text, useDisclosure } from "@chakra-ui/react";
 import * as React from "react";
 import { useAppSelector } from "../../store/hooks";
-import { Chat, Message } from "../../store/interface/chat";
+import { Chat } from "../../store/interface/chat";
 import ChatItem from "./ChatItem";
 import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import CreateGroupChatModal from "./CreateGroupChatModal";

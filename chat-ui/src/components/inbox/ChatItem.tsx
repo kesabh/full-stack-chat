@@ -42,7 +42,7 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
       mt="10px"
       alignItems={"center"}
       padding={"10px"}
-      onClick={(e: React.MouseEvent<HTMLElement>): void => {
+      onClick={(): void => {
         handleChatItemClick();
       }}
       _hover={{ background: "darkcyan", cursor: "pointer", color: "white" }}

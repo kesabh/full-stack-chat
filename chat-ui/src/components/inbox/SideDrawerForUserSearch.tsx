@@ -2,17 +2,14 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  Card,
   Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   Input,
-  Skeleton,
   useToast,
 } from "@chakra-ui/react";
 import { apiUrls } from "../../apiUrls";
