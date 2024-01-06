@@ -65,4 +65,6 @@ app.use("/chat", chatController);
 app.use("/message", messageController);
 app.use("/group", groupChatController);
 
-httpServer.listen(5000);
+const port = process.env.port || 5000;
+
+httpServer.listen(port);
