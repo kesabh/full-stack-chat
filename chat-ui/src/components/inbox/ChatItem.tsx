@@ -5,6 +5,8 @@ import { activeChatProvider } from "../../store/provider/activeChatProvider";
 import { useAppSelector } from "../../store/hooks";
 import { getStore } from "../../store/store";
 import { getUserImageSrc } from "./utils/getUserImageSrc";
+import { Notification } from "../../store/interface/notification";
+import { notificationsProvider } from "../../store/provider/notificationsProvider";
 
 interface ChatItemProps {
   chat: Chat;
@@ -17,6 +19,19 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
   const activeChat = useAppSelector((state) => state.activeChat);
   const userFromStore = useAppSelector((state) => state.user);
   const { setActiveChat } = activeChatProvider();
+  const { deleteNotification } = notificationsProvider();
+
+  const handleChatItemClick = (): void => {
+    if (getStore().state.activeChat._id === chat._id) return;
+    const notifications = getStore().state.notifications;
+    notifications.forEach((notification: Notification) => {
+      if (notification.chatId === chat._id) {
+        deleteNotification(notification);
+      }
+    });
+    setActiveChat(chat);
+    fetchMessagesForActiveChat();
+  };
 
   return (
     <Card
@@ -28,9 +43,7 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
       alignItems={"center"}
       padding={"10px"}
       onClick={(e: React.MouseEvent<HTMLElement>): void => {
-        if (getStore().state.activeChat._id === chat._id) return;
-        setActiveChat(chat);
-        fetchMessagesForActiveChat();
+        handleChatItemClick();
       }}
       _hover={{ background: "darkcyan", cursor: "pointer", color: "white" }}
       bg={activeChat._id === chat._id ? "darkcyan" : ""}
