@@ -1,3 +1,4 @@
 import { io } from "socket.io-client";
+import { baseUrl } from "./apiUrls";
 
-export const socket = io("http://localhost:5000", { autoConnect: false });
+export const socket = io(baseUrl, { autoConnect: false });

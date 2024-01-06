@@ -1,4 +1,4 @@
-const baseUrl = "https://chat-app-be-khb0.onrender.com";
+export const baseUrl = "https://chat-app-be-khb0.onrender.com";
 
 export const apiUrls: { [index: string]: string } = {
   USER_LOGIN: `${baseUrl}/auth/login`,
