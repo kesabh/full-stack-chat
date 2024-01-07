@@ -52,7 +52,7 @@ const InboxPage = (): JSX.Element => {
     socket.emit("send_message", {
       message: {
         ...payload,
-        sender: userFromStore,
+        sender: { ...userFromStore, _id: userFromStore.userId },
         chatName: activeChat.chatName,
       },
       receivers,
