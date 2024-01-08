@@ -66,7 +66,10 @@ const ChatItem = (props: ChatItemProps): JSX.Element => {
               :{" "}
             </Text>
           )}
-          {chat.latestMessage?.content}{" "}
+          {chat.latestMessage?.content &&
+          chat.latestMessage?.content?.length > 20
+            ? `${chat.latestMessage?.content?.substring(0, 20)} ...`
+            : chat.latestMessage?.content}{" "}
         </Text>
       </Box>
     </Card>
